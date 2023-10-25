@@ -1,3 +1,6 @@
+cut -f1 all.delta_rate|sort -uV|sed ":a;N;s/\n/','/;ta"
+
+echo -en "
 library(ggpubr)
 library(dplyr)
 library(stringr)
@@ -9,6 +12,7 @@ col=col_vector[5:73]
 setwd('E:/lixia/NLS_screening_RNA_Pool_sequencing/2023.10.15_deseq2_Forward_element_boxplot/uniq_motif')
 data=read.table('L3U3.deseq2.FDR005.Nuc_Cyt.uniq.fc',header=T,sep='	')
 pdf('L3U3.deseq2.FDR005.Nuc_Cyt.uniq.BoxPlot.pdf',wi=12,he=8)
+ylab='log2fc'
 
 names(data)=c('Group','log2fc')
 max=round(max(data$log2fc)+1)
@@ -47,7 +51,7 @@ p <- ggboxplot(data, x = 'Group', y = 'log2fc', color = 'Group',
 		axis.ticks = element_line(linetype=1,color='black',linewidth=2.5),
 		axis.ticks.length = unit(.35, 'cm'),
 	     )+
-	scale_y_continuous(limits = c(-7.5,max+1),breaks = seq(min,max,2))+
+	scale_y_continuous(name = ylab, limits = c(min-1,max+1),breaks = seq(min,max,2))+
 	annotate('text',
 		x = 1:length(table(data$Group)),
 		y = -7,
@@ -60,4 +64,4 @@ p <- ggboxplot(data, x = 'Group', y = 'log2fc', color = 'Group',
 	annotate('text',x = 1:length(table(data$Group)),y=max_n,label='mid:',col='black',vjust=0)
 p
 dev.off()
-
+" > boxplot.R
