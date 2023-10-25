@@ -6,7 +6,7 @@ qual_col_pals = brewer.pal.info[brewer.pal.info$category == 'qual',]
 col_vector = unlist(mapply(brewer.pal, qual_col_pals$maxcolors,rownames(qual_col_pals)))
 col=col_vector[5:73]
 
-setwd("E:/lixia/NLS_screening_RNA_Pool_sequencing/2023.10.15_deseq2_Forward_element_boxplot/uniq_motif")
+setwd('E:/lixia/NLS_screening_RNA_Pool_sequencing/2023.10.15_deseq2_Forward_element_boxplot/uniq_motif')
 data=read.table('L3U3.deseq2.FDR005.Nuc_Cyt.uniq.fc',header=T,sep='	')
 pdf('L3U3.deseq2.FDR005.Nuc_Cyt.uniq.BoxPlot.pdf',wi=12,he=8)
 
