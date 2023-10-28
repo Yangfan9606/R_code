@@ -2,12 +2,9 @@ data = read.table("ssRNA.RPKM.RPKM.no0",sep="\t",header=T)
 a = data[,2:6]
 #names(a) = c('K562.8eRNANES.uniq','K562.CtrlRNA.uniq','K562.8eRNANLS.uniq','293T.8eRNANLS.uniq','293T.CtrlRNA.uniq')
 names(a) = c('K562_NES','K562_Ctrl','K562_NLS','293T_NLS','293T_Ctrl')
-a1 = data[,2:4]
-names(a1) =  c('Cyt','Ctl','Nuc')
-a2 = data[,5:6]
-names(a2) = c('Nuc','Ctl')
 
 library("corrplot")
+a=a[which(rowSums(a) > 0),]
 matrix = cor(a)
 pdf("ssRNA.correlation.pdf",width = 8,height = 8)
 #corrplot(matrix, method="pie", order = "hclust", type = "upper", tl.col = "black", tl.cex=1.1, bg = "white", addCoef.col = "darkblue", cex.main=1.1,mar=c(0, 0, 0, 0), number.cex = 1.5)
@@ -24,14 +21,3 @@ corrplot(matrix,
                 cex.main=1.1,mar=c(0, 0, 0, 0), number.cex = 1.5)
 dev.off()
 
-matrix = cor(a1)
-pdf("K562.ssRNA.correlation.pdf",width = 8,height = 8)
-####corrplot(matrix, method="pie", order = "hclust", type = "upper", tl.col = "black", tl.cex=1.1, bg = "white", addCoef.col = "red", cex.main=1.1,mar=c(0, 0, 0, 0), number.cex = 1.5)
-corrplot(matrix,is.corr = FALSE,addrect = 1, rect.col = 'black', method="color", col = colorRampPalette(c("#318ce7","#ff2052"))(3),order = "hclust",  cl.pos = 'b', addgrid.col = 'white',tl.col = "black", tl.cex=1.5,bg = "white", addCoef.col = "black",cex.main=1.1,mar=c(0, 0, 0, 0), number.cex = 1.5)
-dev.off()
-
-matrix = cor(a2)
-pdf("293T.ssRNA.correlation.pdf",width = 8,height = 8)
-####corrplot(matrix, method="pie", order = "hclust", type = "upper", tl.col = "black", tl.cex=1.1, bg = "white", addCoef.col = "red", cex.main=1.1,mar=c(0, 0, 0, 0), number.cex = 1.5)
-corrplot(matrix,is.corr = FALSE,addrect = 1, rect.col = 'black', method="color", col = colorRampPalette(c("#318ce7","#ff2052"))(2),order = "hclust",  cl.pos = 'b', addgrid.col = 'white',tl.col = "black", tl.cex=1.5,bg = "white", addCoef.col = "black",cex.main=1.1,mar=c(0, 0, 0, 0), number.cex = 2.5)
-dev.off()
