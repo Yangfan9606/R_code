@@ -5,63 +5,63 @@ library(ggpubr)
 library(dplyr)
 library(stringr)
 library(RColorBrewer)
-qual_col_pals = brewer.pal.info[brewer.pal.info$category == 'qual',]
-col_vector = unlist(mapply(brewer.pal, qual_col_pals$maxcolors,rownames(qual_col_pals)))
+qual_col_pals = brewer.pal.info[brewer.pal.info\$category == 'qual',]
+col_vector = unlist(mapply(brewer.pal, qual_col_pals\$maxcolors,rownames(qual_col_pals)))
 col=col_vector[5:73]
 
-setwd('E:/lixia/NLS_screening_RNA_Pool_sequencing/2023.10.15_deseq2_Forward_element_boxplot/uniq_motif')
-data=read.table('L3U3.deseq2.FDR005.Nuc_Cyt.uniq.fc',header=T,sep='	')
-pdf('L3U3.deseq2.FDR005.Nuc_Cyt.uniq.BoxPlot.pdf',wi=12,he=8)
-ylab='log2fc'
+data=read.table('all.delta_rate',header=T,sep=' ')
+pdf('all.delta_rate.BoxPlot.pdf',wi=12,he=8)
+ylab='delta_rate'
 
 names(data)=c('Group','log2fc')
-max=round(max(data$log2fc)+1)
+max=round(max(data\$log2fc)+1)
 max_y = max - 0.5
 max_n = max + 0.5
-min=round(min(data$log2fc)-1)
+min=round(min(data\$log2fc)-1)
 min_y = min - 0.5
 min_n = min + 0.5
-tbl=table(data$Group)
+tbl=table(data\$Group)
 tbl_df = as.data.frame(tbl)
 
-ord=c('All','none','SC','N1','N2','N3','N4','N5','N6','N7','N8','N9','C1','C2','C3')
-ord_df=tbl_df[match(ord,tbl_df$Var1),]
+ord=c('A549_NES.R1','A549_NES.R2','A549_NLS.R1','A549_NLS.R2','HeLa_NES.R1','HeLa_NLS.R1','HepG2_NES.R1','HepG2_NES.R2','HepG2_NES.R3','HepG2_NLS.R1','HepG2_NLS.R2','HepG2_NLS.R3','K562_NES.R1','K562_NES.R2','K562_NES.R3','K562_NLS.R1','K562_NLS.R2','K562_NLS.R3','First.293T_NLS.R1')
+ord_df=tbl_df[match(ord,tbl_df\$Var1),]
 
-means <- as.data.frame.table(tapply(data$log2fc, data$Group, mean))
-medians <- as.data.frame.table(tapply(data$log2fc, data$Group, median))
+means <- as.data.frame.table(tapply(data\$log2fc, data\$Group, mean))
+medians <- as.data.frame.table(tapply(data\$log2fc, data\$Group, median))
 ###ord_medians=medians
-ord_medians = medians[match(ord,medians$Var1),]
-ord_medians$mid=round(ord_medians$Freq,2)
+ord_medians = medians[match(ord,medians\$Var1),]
+ord_medians\$mid=round(ord_medians\$Freq,2)
 
 p <- ggboxplot(data, x = 'Group', y = 'log2fc', color = 'Group',
-		palette = col,
-		size=1.5,
-		outlier.shape = NA,
-		bxp.errorbar = T,
-		bxp.linewidth=1.5,
-		order = ord,
-		xlab = '',
-	      )+
-	geom_hline(aes(yintercept =0),linetype=5,col='gray50')+
-	theme_classic(base_line_size = 1.5)+
-	theme(
-		axis.title.y = element_text(size=18,face = 'bold'),
-		axis.text.x = element_text(angle=45,vjust = .5,colour = 'black',face = 'bold', size=16),
-		axis.text.y = element_text(size=16,color = 'black',face = 'bold'),
-		axis.ticks = element_line(linetype=1,color='black',linewidth=2.5),
-		axis.ticks.length = unit(.35, 'cm'),
-	     )+
-	scale_y_continuous(name = ylab, limits = c(min-1,max+1),breaks = seq(min,max,2))+
-	annotate('text',
-		x = 1:length(table(data$Group)),
-		y = -7,
-		label = ord_df$Freq,
-		col = 'black',
-		vjust = 0
-		)+
-#	annotate('text',x = 1:length(table(data$Group)),y=min_n,label='n=',col='black',vjust=0)+
-	annotate('text',x = 1:length(table(data$Group)),y=max_y,label=ord_medians$mid,col='black',vjust=0)+
-	annotate('text',x = 1:length(table(data$Group)),y=max_n,label='mid:',col='black',vjust=0)
+                palette = col,
+                size=1.5,
+                outlier.shape = NA,
+                bxp.errorbar = T,
+                bxp.linewidth=1.5,
+                order = ord,
+                xlab = '',
+              )+
+        geom_hline(aes(yintercept =0),linetype=5,col='gray50')+
+        theme_classic(base_line_size = 1.5)+
+        theme(
+                axis.title.y = element_text(size=18,face = 'bold'),
+                axis.text.x = element_text(angle=45,vjust = .5,colour = 'black',face = 'bold', size=16),
+                axis.text.y = element_text(size=16,color = 'black',face = 'bold'),
+                axis.ticks = element_line(linetype=1,color='black',linewidth=2.5),
+                axis.ticks.length = unit(.35, 'cm'),
+             )+
+        scale_y_continuous(name = ylab, limits = c(0,1),breaks = seq(0,1,0.1))
+#       annotate('text',
+#               x = 1:length(table(data\$Group)),
+#               y = -7,
+#               label = ord_df\$Freq,
+#               col = 'black',
+#               vjust = 0
+#               )+
+#       annotate('text',x = 1:length(table(data\$Group)),y=min_n,label='n=',col='black',vjust=0)+
+#       annotate('text',x = 1:length(table(data\$Group)),y=max_y,label=ord_medians\$mid,col='black',vjust=0)+
+#       annotate('text',x = 1:length(table(data\$Group)),y=max_n,label='mid:',col='black',vjust=0)
 p
 dev.off()
 " > boxplot.R
+
