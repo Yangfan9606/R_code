@@ -1,0 +1,85 @@
+require(EnhancedVolcano)
+library(ggplot2)
+
+setwd("")
+DEG = read.table("DEseq2.result.txt",sep="\t",header=T)
+
+xn=as.character(DEG[,1])
+rownames(DEG) = xn
+cut_off_pvalue= 0.05
+cut_off_logFC = 1
+
+pdf("DEseq2.volcano.volcano.pdf",w=8,h=10)
+
+##################   第一种 默认
+#   link: https://bioconductor.org/packages/devel/bioc/vignettes/EnhancedVolcano/inst/doc/EnhancedVolcano.html
+
+p=EnhancedVolcano(DEG,
+		lab = "",
+#		labSize = 2,
+		x = 'log2FoldChange',
+		y = 'padj',
+#selectLab = rownames(lrt)[1:4],
+		xlab = bquote(~Log[2]~ "Fold Change"), ## bquote 下标
+		ylab = bquote(~-Log[10]~italic(padj)), ## italic 斜体
+		pCutoff = cut_off_pvalue,
+		FCcutoff = cut_off_logFC,
+#		xlim = c(-5,5),
+#		ylim = c(0,260),
+		colAlpha = 0.6, ## 透明度
+		pointSize = 3.0,
+    labSize = 6.0,
+    legendLabSize = 18,
+    legendIconSize = 6.0,
+		legendLabels =c("Not Sig","Log2 FC(1)"," P-value(0.05)"," P-value(0.05) & Log2 FC(1)"),
+		legendPosition = "top",
+    title = '',
+		subtitle = ''
+		)
+p
+### 修改坐标轴
+#p + ggplot2::coord_cartesian(xlim=c(-6, 6)) +
+#	ggplot2::scale_x_continuous(breaks=seq(-6,6, 1))
+#
+dev.off()
+
+##################   第二种 指定颜色  
+#   link1: https://medium.com/@putri.a.purwono/making-a-simple-volcano-plot-to-visualize-differentially-expressed-genes-degs-from-rnaseq-data-df505e99411a
+#   link2: https://support.bioconductor.org/p/9136369/
+
+keyvals <- 
+  ifelse(DEG$log2FoldChange < -1 & DEG$padj < 0.05, 'royalblue',
+         ifelse(DEG$log2FoldChange > 1 & DEG$padj < 0.05, 'red2',
+                'grey30'))
+keyvals[is.na(keyvals)] <- 'grey30'
+names(keyvals)[keyvals == 'red2'] <- 'log2fc > 1 & Padj < 0.05'
+names(keyvals)[keyvals == 'grey30'] <- 'Not Sig'
+names(keyvals)[keyvals == 'royalblue'] <- 'log2fc < -1 & Padj < 0.05'
+
+pdf("DEseq2.volcano.volcano.pdf",w=9,h=10)
+p1= EnhancedVolcano(DEG,
+                    x = 'log2FoldChange',
+                    y = 'padj',
+                    lab = '',
+                    title = '',
+                    subtitle = '',
+                    xlab = bquote(~Log[2]~ "(Nuc/Cyt)"), ## bquote 下标
+                    ylab = bquote(~-Log[10]~italic(Padj)), ## italic 斜体
+                    pCutoff = cut_off_pvalue,
+                    FCcutoff = cut_off_logFC,
+                    #                cutoffLineType = 'twodash',
+                    cutoffLineWidth = 0.8,
+                    pointSize = 2.0,
+                    labSize = 4.0,
+                    widthConnectors = 0.5,
+                    legendPosition = 'top',
+                    legendLabSize = 18,
+                    legendIconSize = 4.0,
+                    colCustom = keyvals)+
+  ggplot2::scale_x_continuous(limits = c(-11,11), breaks=seq(-10,10, 2))+
+  ggplot2::theme(
+    axis.text = element_text(size=48,face = 'bold',color = 'black'),
+    axis.title=element_text(size=32,face='bold',color = 'black'),
+  )
+p1
+dev.off()
