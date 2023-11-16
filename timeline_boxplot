@@ -1,0 +1,24 @@
+library(ggplot2)
+
+setwd('E:/yangfan/0_minimal/ZYF/20231115_gRNApaire_Recombination')
+data=read.table(file = 'Jurkat.all.rate',header = T,sep = '\t')
+data=read.table(file = 'K562.all.rate',header = T,sep = '\t')
+head(data)
+
+ord=c('D0','D2','D6','D8','D12','D18','D24')
+ord=c('D0','D2','D4','D6','D10','D14','D16','D18','D24')
+pdf("Jurkat.time.rate.pdf",wi=12,he=8)
+pdf("K562.time.rate.pdf",wi=14,he=8)
+ggplot(data, aes(x = factor(Time, level=ord), y = rate, fill = group,color = group)) + 
+  geom_boxplot(width = .2, alpha = .5, outlier.size = -1,notch = T,notchwidth = 0.10) + 
+  stat_summary(aes(group = group, color = group), fun = "mean", geom = "line", 
+               position = position_dodge(.2), size = 1) + 
+  stat_summary(fun = "mean", geom = "point", shape = 22, size = 2, 
+               position = position_dodge(.2), show.legend = FALSE) +
+  scale_y_continuous(limits = c(0, 0.3)) + 
+  labs(title = "", 
+       x = "", y = "Recombination_rate\n") + 
+  theme_bw(base_size = 12) + 
+  theme(panel.grid.major.x = element_blank(),
+        axis.ticks.x = element_blank())
+dev.off()
